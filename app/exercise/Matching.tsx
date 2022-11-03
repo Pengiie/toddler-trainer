@@ -1,6 +1,7 @@
 
 import type p5Types from "p5";
 import dynamic from 'next/dynamic';
+//import Sketch from "react-p5"
 
 const matching = {
   score: 0,
@@ -49,7 +50,7 @@ const matching = {
 
 
 const Matching = () => {
-  const Sketch = dynamic(() => import('react-p5'), { ssr: false });
+  const Sketch = dynamic(() => import('react-p5').then((mod) => mod.default), { ssr: false });
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     p5.createCanvas(500, 500).parent(canvasParentRef);
