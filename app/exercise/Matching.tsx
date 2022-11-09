@@ -43,14 +43,23 @@ const matching = {
       y,
       size: 75,
     };
-  }
+  },
+  sound: null
 };
 
 //const Sketch = dynamic(() => import('react-p5').then((mod) => mod.default), { ssr: false }); 
 
 
 const Matching = () => {
-  const Sketch = dynamic(() => import('react-p5').then((mod) => mod.default), { ssr: false });
+  const Sketch = dynamic(() => import('react-p5').then((mod) => {
+    require('p5/lib/addons/p5.sound');
+    return mod.default;
+  }), { ssr: false });
+
+  const preload = (p5: p5Types & { loadSound: (s: string) => any}) => {
+    matching.sound = p5.loadSound('/ding.mp3');
+
+  }
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     p5.createCanvas(500, 500).parent(canvasParentRef);
@@ -64,13 +73,16 @@ const Matching = () => {
   
     if(squareDistance < matching.holes.square.size / 2 && matching.currentShape.type === "square") {
       matching.score++;
+      (matching.sound as unknown as { play: () => void }).play();
       matching.newShape();
     } else if(circleDistance < matching.holes.circle.size / 2 && matching.currentShape.type === "circle") {
       matching.score++;
+      (matching.sound as unknown as { play: () => void }).play();
       matching.newShape();
     }
     else if(triangleDistance < matching.holes.triangle.size / 2 && matching.currentShape.type === "triangle") {
       matching.score++;
+      (matching.sound as unknown as { play: () => void }).play();
       matching.newShape();
     }
   }
@@ -125,7 +137,7 @@ const Matching = () => {
     }
   }
 
-  return <Sketch setup={setup} draw={draw} mouseReleased={mouseReleased}/>;
+  return <Sketch preload={preload as (p5: p5Types) => void } setup={setup} draw={draw} mouseReleased={mouseReleased}/>;
 }
 
 export default Matching;

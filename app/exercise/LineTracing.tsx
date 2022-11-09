@@ -1,7 +1,6 @@
 
 import type p5Types from "p5";
 import dynamic from 'next/dynamic';
-//import Sketch from "react-p5"
 
 const linetracing = {
   score: 0,
@@ -52,14 +51,22 @@ const linetracing = {
     linetracing.correct = 0;
     linetracing.drawing = new Array(500).fill(0).map(() => new Array(500).fill(0));
     linetracing.disabled = 1000;
-  }
+  },
+  sound: null
 };
 
 //const Sketch = dynamic(() => import('react-p5').then((mod) => mod.default), { ssr: false }); 
 
-
 const LineTracing = () => {
-  const Sketch = dynamic(() => import('react-p5').then((mod) => mod.default), { ssr: false });
+  const Sketch = dynamic(() => import('react-p5').then((mod) => {
+    require('p5/lib/addons/p5.sound');
+    return mod.default;
+  }), { ssr: false });
+
+  const preload = (p5: p5Types & { loadSound: (s: string) => any}) => {
+    linetracing.sound = p5.loadSound('/ding.mp3');
+
+  }
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     p5.createCanvas(500, 500).parent(canvasParentRef);
@@ -101,20 +108,23 @@ const LineTracing = () => {
       }
       if(linetracing.drawingCount > linetracing.currentLine.count) {
         console.log(linetracing.correct / linetracing.drawingCount);
-        if(linetracing.correct / linetracing.drawingCount > 0.3)
+        if(linetracing.correct / linetracing.drawingCount > 0.3) {
           linetracing.score += 1;
+          (linetracing.sound as unknown as { play: () => void }).play();
+        }
         linetracing.newLine();
         p5.background(0);
         p5.stroke(0, 255, 0);
         p5.strokeWeight(5);
         p5.line(linetracing.currentLine.x0, linetracing.currentLine.y0, linetracing.currentLine.x1, linetracing.currentLine.y1);
+        
       }
     }
     linetracing.prevMouse.x = p5.mouseX;
     linetracing.prevMouse.y = p5.mouseY;
   }
 
-  return <Sketch setup={setup} draw={draw} />;
+  return <Sketch preload={preload as (p5: p5Types) => void } setup={setup} draw={draw} />;
 }
 
 export default LineTracing;

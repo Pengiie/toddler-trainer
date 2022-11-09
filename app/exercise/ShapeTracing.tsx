@@ -127,14 +127,23 @@ const shapetracing = {
     } else if(shapetracing.currentShape.type === "triangle") {
       p5.triangle(shapetracing.currentShape.x0, shapetracing.currentShape.y0, shapetracing.currentShape.x1, shapetracing.currentShape.y0, shapetracing.currentShape.x0 + (shapetracing.currentShape.x1-shapetracing.currentShape.x0) / 2, shapetracing.currentShape.y1);  
     }
-  }
+  },
+  sound: null
 };
 
 //const Sketch = dynamic(() => import('react-p5').then((mod) => mod.default), { ssr: false }); 
 
 
 const ShapeTracing = () => {
-  const Sketch = dynamic(() => import('react-p5').then((mod) => mod.default), { ssr: false });
+  const Sketch = dynamic(() => import('react-p5').then((mod) => {
+    require('p5/lib/addons/p5.sound');
+    return mod.default;
+  }), { ssr: false });
+
+  const preload = (p5: p5Types & { loadSound: (s: string) => any}) => {
+    shapetracing.sound = p5.loadSound('/ding.mp3');
+
+  }
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     p5.createCanvas(500, 500).parent(canvasParentRef);
@@ -174,8 +183,10 @@ const ShapeTracing = () => {
       }
       if(shapetracing.drawingCount > shapetracing.currentShape.count) {
         console.log(shapetracing.correct / shapetracing.drawingCount);
-        if(shapetracing.correct / shapetracing.drawingCount > 0.3)
-        shapetracing.score += 1;
+        if(shapetracing.correct / shapetracing.drawingCount > 0.3) {
+          shapetracing.score += 1;
+          (shapetracing.sound as unknown as { play: () => void }).play();
+        }
         shapetracing.newShape();
         shapetracing.drawShape(p5);
       }
@@ -184,7 +195,7 @@ const ShapeTracing = () => {
     shapetracing.prevMouse.y = p5.mouseY;
   }
 
-  return <Sketch setup={setup} draw={draw} />;
+  return <Sketch preload={preload as (p5: p5Types) => void }  setup={setup} draw={draw} />;
 }
 
 export default ShapeTracing;
