@@ -8,9 +8,9 @@ const Exercise = ({ children, link }: { children: React.ReactNode, link: string 
 const Home = () => {
   return (
     <div className="flex flex-col w-full h-screen">
-      <header className="flex flex-col text-white bg-blue-400 items-center py-32 gap-8 flex-grow">
+      <header className="flex flex-col text-white bg-blue-400 justify-center items-center py-32 gap-8 flex-grow">
         <h1 className="text-6xl w-fit">Toddler Trainer</h1>
-        <Link href="exercise/matching"><h2 className="px-6 py-4 border-white w-fit border-2 text-2xl rounded-md hover:rounded-3xl bg-white bg-opacity-0 hover:bg-opacity-10 transition-all duration-500">Getting Started</h2></Link>
+        <h2 className="px-6 py-4 border-white w-fit border-2 text-2xl rounded-md hover:rounded-3xl bg-white bg-opacity-0 hover:bg-opacity-10 transition-all duration-500"><Link href="exercise/matching">Getting Started</Link></h2>
       </header>
       <main className="flex gap-16 px-32 py-32 justify-evenly">
         <Exercise link="exercise/matching">Matching the shapes</Exercise>
