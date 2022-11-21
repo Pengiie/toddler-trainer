@@ -15,7 +15,7 @@ const Home = () => {
       <main className="flex gap-16 px-32 py-32 justify-evenly">
         <Exercise link="exercise/matching">Matching the shapes</Exercise>
         <Exercise link="exercise/traceshape">Tracing the shapes</Exercise>
-        <Exercise link="exercise/traceline">Tracing the line</Exercise>
+        <Exercise link="exercise/traceanimal">Tracing the animals</Exercise>
       </main>
     </div>
   );

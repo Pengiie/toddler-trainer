@@ -1,5 +1,5 @@
 import Header from "../../app/exercise/Header";
-import LineTracing from "../../app/exercise/LineTracing";
+import LineTracing from "../../app/exercise/AnimalTracing";
 import ExerciseLayout from "../../app/exercise/layout";
 
 import "../../styles/globals.css"

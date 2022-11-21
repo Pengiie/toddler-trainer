@@ -162,7 +162,14 @@ const ShapeTracing = () => {
     p5.fill(255);
     p5.textSize(20);
     p5.textAlign(p5.LEFT, p5.TOP);
-    p5.text(`Score: ${shapetracing.score}`, 0, 0)
+    p5.text(`Score: ${shapetracing.score}`, 2, 2)
+    p5.textAlign(p5.RIGHT, p5.TOP);
+    p5.fill(0);
+    p5.rect(p5.width - 202, 5, 202, 45);
+    p5.fill(255);
+    p5.text(`Completion: %${Math.floor((shapetracing.drawingCount / shapetracing.currentShape.count) * 100)}`, 498, 2);
+    p5.text(`Grade: %${Math.floor(Math.min(shapetracing.correct / shapetracing.drawingCount || 0, 0.42) * (10/4.2) * 100)}`, 498, 22);
+  
   
     p5.stroke(255, 0, 0);
     p5.strokeWeight(5);
