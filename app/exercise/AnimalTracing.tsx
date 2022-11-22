@@ -33,6 +33,7 @@ const animaltracing = {
     paths.forEach(path => {
       let pos = 0;
       let x = 0, y = 0;
+      let pcx = 0, pcy = 0;
       while(pos < path.length) {
         const match = path.substring(pos).match(/[mMLlHhVvCcSsQqTtAaz][^mMLlHhVvCcSsQqTtAaz]+/);
         if(!match) break;
@@ -141,6 +142,8 @@ const animaltracing = {
             px[cx][cy] = 1;
           }
 
+          pcx = x + dx2;
+          pcy = y + dy2;
           x += dx3;
           y += dy3;
         } else if(cmd[0] === 'C') {
@@ -157,6 +160,8 @@ const animaltracing = {
             px[cx][cy] = 1;
           }
 
+          pcx = x3;
+          pcy = y3;
           x = x3;
           y = y3;
         } else if(cmd[0] === 's') {
@@ -165,16 +170,36 @@ const animaltracing = {
           const distance = Math.sqrt(dx3 ** 2 + dy3 ** 2);
           for(let t = 0; t < distance; t+= 0.5) {
             const normalizedT = t / distance;
-            const cx = Math.floor((1- normalizedT) ** 2 * x + 2 * (1 - normalizedT) * normalizedT * (x+dx2) + normalizedT ** 2 * (x+dx3));
-            const cy = Math.floor((1- normalizedT) ** 2 * y + 2 * (1 - normalizedT) * normalizedT * (y+dy2) + normalizedT ** 2 * (y+dy3));
+            const cx = Math.floor((1 - normalizedT) ** 3 * x + 3 * (1 - normalizedT) ** 2 * normalizedT * (x + (x - pcx)) + 3 * (1 - normalizedT) * normalizedT ** 2 * (x+dx2) + normalizedT ** 3 * (x+dx3));
+            const cy = Math.floor((1 - normalizedT) ** 3 * y + 3 * (1 - normalizedT) ** 2 * normalizedT * (y + (y - pcy)) + 3 * (1 - normalizedT) * normalizedT ** 2 * (y+dy2) + normalizedT ** 3 * (y+dy3));
             if(px[cx][cy] == 0) {
               count++;
             }
             px[cx][cy] = 1;
           }
 
+          pcx = x + dx2;
+          pcy = y + dy2;
           x += dx3;
           y += dy3;
+        } else if(cmd[0] === 'S') {
+          const [x2, y2, x3, y3] = cmd.substring(1).match(/(-)?(\d|\.)+/g)!!.map(s => parseFloat(s) * srat + ss);
+          
+          const distance = Math.sqrt((x3 - x) ** 2 + (y3 - y) ** 2);
+          for(let t = 0; t < distance; t+= 0.5) {
+            const normalizedT = t / distance;
+            const cx = Math.floor((1 - normalizedT) ** 3 * x + 3 * (1 - normalizedT) ** 2 * normalizedT * (x + (x - pcx)) + 3 * (1 - normalizedT) * normalizedT ** 2 * x2 + normalizedT ** 3 * x3);
+            const cy = Math.floor((1 - normalizedT) ** 3 * y + 3 * (1 - normalizedT) ** 2 * normalizedT * (y + (y - pcy)) + 3 * (1 - normalizedT) * normalizedT ** 2 * y2 + normalizedT ** 3 * y3);
+            if(px[cx][cy] == 0) {
+              count++;
+            }
+            px[cx][cy] = 1;
+          }
+
+          pcx = x2;
+          pcy = y2;
+          x = x3;
+          y = y3;
         } else if(cmd[0] === 'z') {
           break;
         }
@@ -295,6 +320,7 @@ const AnimalTracing = () => {
     paths.forEach(path => {
       let pos = 0;
       let x = 0, y = 0;
+      let pcx = 0, pcy = 0;
       while(pos < path.length) {
         const match = path.substring(pos).match(/[mMLlHhVvCcSsQqTtAaz][^mMLlHhVvCcSsQqTtAaz]+/);
         if(!match) break;
@@ -336,18 +362,31 @@ const AnimalTracing = () => {
         } else if(cmd[0] === 'c') {
           const [dx1, dy1, dx2, dy2, dx3, dy3] = cmd.substring(1).match(/(-)?(\d|\.)+/g)!!.map(s => parseFloat(s) * srat);
           p5.bezier(x, y, x + dx1, y + dy1, x + dx2, y + dy2, x + dx3, y + dy3);
+          pcx = x + dx2;
+          pcy = y + dy2;
           x += dx3;
           y += dy3;
         } else if(cmd[0] === 'C') {
           const [x1, y1, x2, y2, x3, y3] = cmd.substring(1).match(/(-)?(\d|\.)+/g)!!.map(s => parseFloat(s) * srat + ss);
           p5.bezier(x, y, x1, y1, x2, y2, x3, y3);
+          pcx = x2;
+          pcy = y2;
           x = x3;
           y = y3;
         } else if(cmd[0] === 's') {
           const [dx2, dy2, dx3, dy3] = cmd.substring(1).match(/(-)?(\d|\.)+/g)!!.map(s => parseFloat(s) * srat);
-          p5.bezier(x, y, x + dx2, y + dy2, x + dx3, y + dy3, x + dx3, y + dy3);
+          p5.bezier(x, y, x + (x - pcx), y + (y - pcy), x + dx2, y + dy2, x + dx3, y + dy3);
+          pcx = x + dx2;
+          pcy = y + dy2;
           x += dx3;
           y += dy3;
+        } else if(cmd[0] === 'S') {
+          const [x2, y2, x3, y3] = cmd.substring(1).match(/(-)?(\d|\.)+/g)!!.map(s => parseFloat(s) * srat + ss);
+          p5.bezier(x, y, x + (x - pcx), y + (y - pcy), x2, y2, x3, y3);
+          pcx = x2;
+          pcy = y2;
+          x = x3;
+          y = y3;
         } else if(cmd[0] === 'z') {
           break;
         }
@@ -367,7 +406,7 @@ const AnimalTracing = () => {
 
   const preload = (p5: p5Types & { loadSound: (s: string) => any}) => {
     animaltracing.sound = p5.loadSound('/ding.mp3');
-    const animals = ["bunny"];
+    const animals = ["bunny", "penguin"];
 
     const promises = animals.map((animal) => {
       return fetch(`/animals/${animal}.svg`).then(async (res) => {
