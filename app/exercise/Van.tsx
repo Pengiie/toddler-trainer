@@ -16,11 +16,11 @@ const van = {
   dragging: false,
   new: () => {
     van.currentVan = {
-      x: Math.floor(Math.random() * 190) + 250,
+      x: Math.floor(Math.random() * 150) + 250,
       y: Math.floor(Math.random() * 400),
     };
     van.currentKid = {
-      x: Math.floor(Math.random() * 200),
+      x: Math.floor(Math.random() * 150),
       y: Math.floor(Math.random() * 400),
     };
   },
@@ -39,9 +39,9 @@ const Matching = () => {
   }), { ssr: false });
 
   const preload = (p5: p5Types & { loadSound: (s: string) => any}) => {
-    van.sound = p5.loadSound('/ding.mp3');
-    van.van = p5.loadImage('/van.png');
-    van.kid = p5.loadImage('/kid.png');
+    van.sound = p5.loadSound('/yay.mp3');
+    van.van = p5.loadImage('/van.jpg');
+    van.kid = p5.loadImage('/kid.jpg');
   }
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
@@ -60,14 +60,14 @@ const Matching = () => {
   }
   
   const draw = (p5: p5Types) => {
-    if(p5.mouseX > van.currentKid.x && p5.mouseX < van.currentKid.x + 50 && p5.mouseY > van.currentKid.y && p5.mouseY < van.currentKid.y + 50) {
+    if(p5.mouseX > van.currentKid.x && p5.mouseX < van.currentKid.x + 100 && p5.mouseY > van.currentKid.y && p5.mouseY < van.currentKid.y + 100) {
       p5.cursor("pointer");
     } else {
       p5.cursor("unset");
     }
   
     if(p5.mouseIsPressed) {
-      if(p5.mouseX > van.currentKid.x && p5.mouseX < van.currentKid.x + 50 && p5.mouseY > van.currentKid.y && p5.mouseY < van.currentKid.y + 50) {
+      if(p5.mouseX > van.currentKid.x && p5.mouseX < van.currentKid.x + 100 && p5.mouseY > van.currentKid.y && p5.mouseY < van.currentKid.y + 100) {
         van.dragging = true;
       }
     } else {
@@ -75,8 +75,8 @@ const Matching = () => {
     }
 
     if(van.dragging) {
-      van.currentKid.x = p5.mouseX - 50 / 2;
-      van.currentKid.y = p5.mouseY - 50 / 2;
+      van.currentKid.x = p5.mouseX - 50;
+      van.currentKid.y = p5.mouseY - 50;
     }
 
     p5.clear();
@@ -86,8 +86,8 @@ const Matching = () => {
     p5.textAlign(p5.LEFT, p5.TOP);
     p5.text(`Score: ${van.score}`, 0, 0)
   
-    p5.image(van.van, van.currentVan.x, van.currentVan.y, 50, 50);
-    p5.image(van.kid, van.currentKid.x, van.currentKid.y, 50, 50);
+    p5.image(van.van, van.currentVan.x, van.currentVan.y, 100, 100);
+    p5.image(van.kid, van.currentKid.x, van.currentKid.y, 100, 100);
   }
 
   return <Sketch preload={preload as (p5: p5Types) => void } setup={setup} draw={draw} mouseReleased={mouseReleased}/>;
